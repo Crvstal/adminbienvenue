@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>bien-Venue Admin Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: #0f1419;
+            color: #e4e7ea;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #1a1f29;
+            min-height: 100vh;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #141b26 0%, #1a1f29 100%);
+            padding: 20px 30px;
+            border-bottom: 2px solid #2d3748;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #00d4ff;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-link {
+            padding: 10px 20px;
+            background: #2d3748;
+            color: #e4e7ea;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 1px solid #4a5568;
+        }
+
+        .nav-link:hover {
+            background: #4a5568;
+            transform: translateY(-2px);
+        }
+
+        .nav-link.client {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+        }
+
+        .nav-link.agent {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            border-color: #2c3e50;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: #141b26;
+            padding: 100px 0 20px;
+            border-right: 2px solid #2d3748;
+            overflow-y: auto;
+        }
+
+        .sidebar-item {
+            padding: 15px 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-item:hover {
+            background: #1a1f29;
+            border-left-color: #00d4ff;
+        }
+
+        .sidebar-item.active {
+            background: #1a1f29;
+            border-left-color: #00d4ff;
+            color: #00d4ff;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            padding: 30px;
+            min-height: calc(100vh - 80px);
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #00d4ff;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #1a1f29 0%, #2d3748 100%);
+            border: 1px solid #4a5568;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.1);
+            border-color: #00d4ff;
+        }
+
+        .stat-number {
+            font-size: 36px;
+            font-weight: 700;
+            color: #00d4ff;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            color: #a0aec0;
+            font-weight: 600;
+        }
+
+        .section {
+            background: #1a1f29;
+            border: 1px solid #2d3748;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #e4e7ea;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #2d3748;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th,
+        .table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #2d3748;
+        }
+
+        .table th {
+            background: #141b26;
+            color: #00d4ff;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+
+        .table tr:hover {
+            background: #141b26;
+        }
+
+        .status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status.pending {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+            border: 1px solid #ffc107;
+        }
+
+        .status.approved {
+            background: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+            border: 1px solid #28a745;
+        }
+
+        .status.rejected {
+            background: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+            border: 1px solid #dc3545;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0 5px;
+            font-size: 12px;
+        }
+
+        .btn-approve {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-approve:hover {
+            background: #218838;
+        }
+
+        .btn-reject {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-reject:hover {
+            background: #c82333;
+        }
+
+        .btn-view {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-view:hover {
+            background: #138496;
+        }
+
+        .metrics-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .chart-placeholder {
+            height: 200px;
+            background: linear-gradient(135deg, #141b26 0%, #2d3748 100%);
+            border: 2px dashed #4a5568;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #a0aec0;
+            font-weight: 600;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px 15px;
+            background: #141b26;
+            border: 1px solid #2d3748;
+            border-radius: 6px;
+            color: #e4e7ea;
+            font-size: 14px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #00d4ff;
+        }
+
+        .filter-select {
+            padding: 12px 15px;
+            background: #141b26;
+            border: 1px solid #2d3748;
+            border-radius: 6px;
+            color: #e4e7ea;
+            min-width: 150px;
+        }
+
+        .export-btn {
+            background: #00d4ff;
+            color: #0f1419;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .export-btn:hover {
+            background: #00b8d4;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .metrics-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-links {
+                flex-direction: column;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">bien-Venue Admin</div>
+            <div class="nav-links">
+                <a href="https://crvstal.github.io/clibienvenue" class="nav-link client">Client App</a>
+                <a href="https://crvstal.github.io/agentbienvenue" class="nav-link agent">Agent Portal</a>
+            </div>
+        </header>
+
+        <aside class="sidebar">
+            <div class="sidebar-item active" onclick="showTab('dashboard')">
+                <span>📊</span> Dashboard
+            </div>
+            <div class="sidebar-item" onclick="showTab('vendors')">
+                <span>🏢</span> Vendor Approvals
+            </div>
+            <div class="sidebar-item" onclick="showTab('applications')">
+                <span>👥</span> Applications
+            </div>
+            <div class="sidebar-item" onclick="showTab('metrics')">
+                <span>📈</span> Metrics & Analytics
+            </div>
+            <div class="sidebar-item" onclick="showTab('data')">
+                <span>💾</span> Data Export
+            </div>
+            <div class="sidebar-item" onclick="showTab('settings')">
+                <span>⚙️</span> System Settings
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <!-- Dashboard Tab -->
+            <div id="dashboard" class="tab-content active">
+                <div class="dashboard-header">
+                    <h1 class="dashboard-title">System Overview</h1>
+                    <div class="current-time" id="currentTime"></div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalVendors">24</div>
+                        <div class="stat-label">Total Vendors</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="pendingApprovals">7</div>
+                        <div class="stat-label">Pending Approvals</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="activeApplications">156</div>
+                        <div class="stat-label">Active Applications</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalHires">89</div>
+                        <div class="stat-label">Completed Hires</div>
+                    </div>
+                </div>
+
+                <div class="metrics-row">
+                    <div class="section">
+                        <h2 class="section-title">Application Trends</h2>
+                        <div class="chart-placeholder">
+                            Application Volume Chart (Coming Soon)
+                        </div>
+                    </div>
+                    <div class="section">
+                        <h2 class="section-title">Vendor Distribution</h2>
+                        <div class="chart-placeholder">
+                            Geographic Distribution Chart (Coming Soon)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Recent Activity</h2>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Event</th>
+                                <th>Details</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="activityLog">
+                            <tr>
+                                <td>14:32</td>
+                                <td>Vendor Registration</td>
+                                <td>TechHub Lagos submitted registration</td>
+                                <td><span class="status pending">Pending</span></td>
+                            </tr>
+                            <tr>
+                                <td>13:45</td>
+                                <td>Application</td>
+                                <td>Student applied to SportsPlex Nigeria</td>
+                                <td><span class="status approved">Processed</span></td>
+                            </tr>
+                            <tr>
+                                <td>12:18</td>
+                                <td>Hire Approval</td>
+                                <td>Marketing Minds hired new intern</td>
+                                <td><span class="status approved">Approved</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Vendor Approvals Tab -->
+            <div id="vendors" class="tab-content">
+                <div class="dashboard-header">
+                    <h1 class="dashboard-title">Vendor Approvals</h1>
+                </div>
+
+                <div class="search-bar">
+                    <input type="text" class="search-input" placeholder="Search vendors..." id="vendorSearch">
+                    <select class="filter-select" id="vendorFilter">
+                        <option value="all">All Statuses</option>
+                        <option value="pending">Pending</option>
+                        <option value="approved">Approved</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                </div>
+
+                <div class="section">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Company</th>
+                                <th>CAC Number</th>
+                                <th>Location</th>
+                                <th>Services</th>
+                                <th>Work Types</th>
+                                <th>Submitted</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="vendorsList">
+                            <tr>
+                                <td>TechHub Lagos</td>
+                                <td>RC123456</td>
+                                <td>Lagos Central</td>
+                                <td>Internships, Tech Training</td>
+                                <td>On-site, Hybrid</td>
+                                <td>2025-09-25</td>
+                                <td><span class="status pending">Pending</span></td>
+                                <td>
+                                    <button class="btn btn-view" onclick="viewVendor('TechHub Lagos')">View</button>
+                                    <button class="btn btn-approve" onclick="approveVendor('TechHub Lagos')">Approve</button>
+                                    <button class="btn btn-reject" onclick="rejectVendor('TechHub Lagos')">Reject</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>SportsPlex Nigeria</td>
+                                <td>RC789012</td>
+                                <td>Lagos West</td>
+                                <td>Sports Teams, Coaching</td>
+                                <td>On-site, Flexible</td>
+                                <td>2025-09-24</td>
+                                <td><span class="status approved">Approved</span></td>
+                                <td>
+                                    <button class="btn btn-view" onclick="viewVendor('SportsPlex Nigeria')">View</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Applications Tab -->
+            <div id="applications" class="tab-content">
+                <div class="dashboard-header">
+                    <h1 class="dashboard-title">Application Management</h1>
+                </div>
+
+                <div class="search-bar">
+                    <input type="text" class="search-input" placeholder="Search applications..." id="appSearch">
+                    <select class="filter-select" id="appFilter">
+                        <option value="all">All Statuses</option>
+                        <option value="pending">Pending Admin</option>
+                        <option value="agent_hired">Agent Hired</option>
+                        <option value="final_approved">Final Approved</option>
+                    </select>
+                </div>
+
+                <div class="section">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Company</th>
+                                <th>Role</th>
+                                <th>University</th>
+                                <th>Applied Date</th>
+                                <th>Agent Decision</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="applicationsList">
+                            <tr>
+                                <td>John Doe</td>
+                                <td>TechHub Lagos</td>
+                                <td>Developer Intern</td>
+                                <td>UNILAG</td>
+                                <td>2025-09-27</td>
+                                <td>Hired</td>
+                                <td><span class="status pending">Pending Admin</span></td>
+                                <td>
+                                    <button class="btn btn-view" onclick="viewApplication('John Doe')">View</button>
+                                    <button class="btn btn-approve" onclick="finalApprove('John Doe')">Final Approve</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Metrics Tab -->
+            <div id="metrics" class="tab-content">
+                <div class="dashboard-header">
+                    <h1 class="dashboard-title">Metrics & Analytics</h1>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">87%</div>
+                        <div class="stat-label">Approval Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">2.3</div>
+                        <div class="stat-label">Avg Review Days</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">94%</div>
+                        <div class="stat-label">Hire Success Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">156</div>
+                        <div class="stat-label">Active Internships</div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Engineering Metrics</h2>
+                    <div class="chart-placeholder">
+                        System Performance & AI Training Data Metrics (Coming Soon)
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Custom Metrics Configuration</h2>
+                    <p style="color: #a0aec0; margin-bottom: 20px;">Configure custom metrics for AI dataset training and system optimization.</p>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                        <div style="padding: 20px; background: #141b26; border-radius: 8px;">
+                            <h4 style="color: #00d4ff; margin-bottom: 10px;">Response Time Tracking</h4>
+                            <p style="color: #a0aec0; font-size: 14px;">Monitor application processing speed</p>
+                        </div>
+                        <div style="padding: 20px; background: #141b26; border-radius: 8px;">
+                            <h4 style="color: #00d4ff; margin-bottom: 10px;">Quality Score Analysis</h4>
+                            <p style="color: #a0aec0; font-size: 14px;">Track vendor and student match quality</p>
+                        </div>
+                        <div style="padding: 20px; background: #141b26; border-radius: 8px;">
+                            <h4 style="color: #00d4ff; margin-bottom: 10px;">Geographic Distribution</h4>
+                            <p style="color: #a0aec0; font-size: 14px;">Analyze senatorial zone coverage</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Export Tab -->
+            <div id="data" class="tab-content">
+                <div class="dashboard-header">
+                    <h1 class="dashboard-title">Data Export for AI Training</h1>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Export Options</h2>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-top: 25px;">
+                        <div style="padding: 25px; background: #141b26; border-radius: 12px; border: 1px solid #2d3748;">
+                            <h3 style="color: #00d4ff; margin-bottom: 15px;">📊 Vendor Dataset</h3>
+                            <p style="color: #a0aec0; margin-bottom: 15px;">Export vendor profiles, services, success metrics</p>
+                            <button class="export-btn" onclick="exportData('vendors')">Export JSON</button>
+                        </div>
+                        <div style="padding: 25px; background: #141b26; border-radius: 12px; border: 1px solid #2d3748;">
+                            <h3 style="color: #00d4ff; margin-bottom: 15px;">👥 Application Dataset</h3>
+                            <p style="color: #a0aec0; margin-bottom: 15px;">Export application patterns, matching data</p>
+                            <button class="export-btn" onclick="exportData('applications')">Export JSON</button>
+                        </div>
+                        <div style="padding: 25px; background: #141b26; border-radius: 12px; border: 1px solid #2d3748;">
+                            <h3 style="color: #00d4ff; margin-bottom: 15px;">⚡ Performance Dataset</h3>
+                            <p style="color: #a0aec0; margin-bottom: 15px;">Export system metrics, response times</p>
+                            <button class="export-btn" onclick="exportData('performance')">Export JSON</button>
+                        </div>
+                        <div style="padding: 25px; background: #141b26; border-radius: 12px; border: 1px solid #2d3748;">
+                            <h3 style="color: #00d4ff; margin-bottom: 15px;">🎯 Complete Dataset</h3>
+                            <p style="color: #a0aec0; margin-bottom: 15px;">Full system data for comprehensive AI training</p>
+                            <button class="export-btn" onclick="exportData('complete')">Export All</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Generated JSON Files</h2>
+                    <div id="exportLog">
+                        <p style="color: #a0aec0;">No exports generated yet.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div id="settings" class="tab-content">
+                <div class="dashboard-header">
+                    <h1 class="dashboard-title">System Settings</h1>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Approval Workflow</h2>
+                    <div style="display: grid; gap: 20px;">
+                        <label style="display: flex; align-items: center; gap: 10px;">
+                            <input type="checkbox" checked> Auto-approve vendors with complete documentation
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 10px;">
+                            <input type="checkbox"> Require manual review for all applications
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 10px;">
+                            <input type="checkbox" checked> Send notifications to agents on status changes
+                        </label>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Data Retention</h2>
+                    <div style="display: grid; gap: 15px;">
+                        <div>
+                            <label style="color: #a0aec0; margin-bottom: 5px; display: block;">Application Data Retention (days)</label>
+                            <input type="number" value="365" style="padding: 10px; background: #141b26; border: 1px solid #2d3748; border-radius: 6px; color: #e4e7ea; width: 100px;">
+                        </div>
+                        <div>
+                            <label style="color: #a0aec0; margin-bottom: 5px; display: block;">Vendor Data Retention (days)</label>
+                            <input type="number" value="1095" style="padding: 10px; background: #141b26; border: 1px solid #2d3748; border-radius: 6px; color: #e4e7ea; width: 100px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.sidebar-item').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = now.toLocaleString();
+        }
+
+        function approveVendor(name) {
+            if (confirm(`Approve ${name} for listing?`)) {
+                alert(`${name} approved and added to vendor marketplace!`);
+                // Update status in table
+                event.target.closest('tr').querySelector('.status').innerHTML = '<span class="status approved">Approved</span>';
+                event.target.style.display = 'none';
+                event.target.nextElementSibling.style.display = 'none';
+            }
+        }
+
+        function rejectVendor(name) {
+            const reason = prompt(`Reason for rejecting ${name}:`);
+            if (reason) {
+                alert(`${name} rejected. Notification sent with feedback.`);
+                event.target.closest('tr').querySelector('.status').innerHTML = '<span class="status rejected">Rejected</span>';
+                event.target.style.display = 'none';
+                event.target.previousElementSibling.style.display = 'none';
+            }
+        }
+
+        function viewVendor(name) {
+            alert(`Viewing detailed profile for ${name}`);
+        }
+
+        function finalApprove(name) {
+            if (confirm(`Give final approval for ${name}'s hire?`)) {
+                alert(`${name}'s hire finalized! Escrow process initiated.`);
+                event.target.closest('tr').querySelector('.status').innerHTML = '<span class="status approved">Final Approved</span>';
+                event.target.style.display = 'none';
+            }
+        }
+
+        function viewApplication(name) {
+            alert(`Viewing application details for ${name}`);
+        }
+
+        function exportData(type) {
+            const mockData = {
+                vendors: { total: 24, approved: 17, data: "vendor_profiles.json" },
+                applications: { total: 156, processed: 89, data: "application_patterns.json" },
+                performance: { metrics: "system_performance.json", uptime: "99.7%" },
+                complete: { files: ["vendors.json", "applications.json", "metrics.json"] }
+            };
+
+            const timestamp = new Date().toISOString().split('T')[0];
+            const filename = `${type}_export_${timestamp}.json`;
+            
+            const exportLog = document.getElementById('exportLog');
+            const logEntry = document.createElement('div');
+            logEntry.style.cssText = 'padding: 10px; background: #141b26; border-radius: 6px; margin: 10px 0; border-left: 4px solid #00d4ff;';
+            logEntry.innerHTML = `
+                <strong style="color: #00d4ff;">${filename}</strong><br>
+                <small style="color: #a0aec0;">Generated: ${new Date().toLocaleString()}</small><br>
+                <small style="color: #a0aec0;">Ready for AI training dataset</small>
+            `;
+            
+            if (exportLog.textContent.includes('No exports')) {
+                exportLog.innerHTML = '';
+            }
+            exportLog.appendChild(logEntry);
+
+            alert(`${filename} generated successfully!`);
+        }
+
+        // Initialize
+        updateTime();
+        setInterval(updateTime, 1000);
+
+        // Mock dynamic data updates
+        setInterval(() => {
+            const stats = ['totalVendors', 'pendingApprovals', 'activeApplications', 'totalHires'];
+            stats.forEach(stat => {
+                const element = document.getElementById(stat);
+                if (element) {
+                    const current = parseInt(element.textContent);
+                    const change = Math.random() > 0.5 ? 1 : -1;
+                    element.textContent = Math.max(0, current + change);
+                }
+            });
+        }, 30000);
+
+        // Search functionality
+        document.getElementById('vendorSearch')?.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('#vendorsList tr');
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+
+        document.getElementById('appSearch')?.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('#applicationsList tr');
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
